@@ -1,8 +1,7 @@
 (ns sexpr-project.examples)
 
 (def ex_orders
-  {:orders [
-            {:number 99503
+  {:orders [{:number 99503
              :date "1999-10-20"
 
              :addresses
