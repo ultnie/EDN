@@ -29,7 +29,7 @@ catalog/genre[="Fantasy"] - return books with genre Fantasy
 catalog[%"Fantasy"] - same, but without telling that it is genre, or if something else also equals "Fantasy" it should be returned
 catalog[2] - return the third object on catalog
 orders/*/name[%"Ellen Adams"] - return everything in "orders" that has a field name
-~name или ~/name - относительный поиск
+~name или ~/name - relative search
 ```
 
 ## Search
