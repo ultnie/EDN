@@ -5,10 +5,13 @@
   (:require [clojure.edn :as edn])
   (:require [sexpr-project.search :as search])
   (:require [sexpr_project.modify :as modify])
+  (:require [sexpr-project.validator :as validator])
   )
 
 (defn open-edn-from-string [x]
   (edn/read-string (pr-str x)))
+
+(def schema "{:orders [{:date nil :number nil :addresses [{:name nil :city nil :type nil :state nil :street nil :zip nil :country nil}] :items [{:ship_date nil :name nil :item nil :comment nil :quantity nil :price nil}]}]}")
 
 ; * - match all
 ; [] - optional selector 
@@ -22,27 +25,4 @@
 ; как сделать относительный путь (сохранять предыдущий запрос и склеивать с относительным), схему (обход)? Модификацию, по идее, можно через мапу.
 
 (defn -main []
-  ;(pprint/pprint (verify-edn exml/ex_orders))
-  ;(pprint/pprint (verify-edn exml/ex_vehicles))
-  ;(pprint/pprint (verify-edn exml/ex_catalog))
-  ;(println (parser/prepare-for-search "orders"))
-  (pprint/pprint (search/start-search "/orders/nothing/" (open-edn-from-string exml/ex_orders)))
-  (pprint/pprint (search/start-search "/orders/addresses[%95819]/name/" (open-edn-from-string exml/ex_orders)))
-  (pprint/pprint (search/start-search "/orders[0]/addresses[1]/name/" (open-edn-from-string exml/ex_orders)))
-  (pprint/pprint (search/start-search "/orders/addresses/name[=\"Ellen Adams\"]/" (open-edn-from-string exml/ex_orders)))
-  (pprint/pprint (search/start-search "/orders/*/name[=\"Ellen Adams\"]/" (open-edn-from-string exml/ex_orders)))
-  (pprint/pprint (search/start-search "/orders/addresses[%\"Ellen Adams\"]/" (open-edn-from-string exml/ex_orders)))
-  (pprint/pprint (search/start-search "/orders/*" (open-edn-from-string exml/ex_orders)))
-  (pprint/pprint (search/start-search "~/name" (open-edn-from-string exml/ex_orders)))
-  (pprint/pprint (search/start-search "/sssss/" (open-edn-from-string exml/ex_orders)))
-  (println (search/get-path (search/start-search "orders/nothing" (open-edn-from-string exml/ex_orders)) (open-edn-from-string exml/ex_orders)))
-  (println (search/get-path (search/start-search "orders/addresses[%95819]/name" (open-edn-from-string exml/ex_orders)) (open-edn-from-string exml/ex_orders)))
-  (println (search/get-path (search/start-search "orders[0]/addresses[1]/name" (open-edn-from-string exml/ex_orders)) (open-edn-from-string exml/ex_orders)))
-  (println (search/path-to-str (search/get-path (search/start-search "orders/nothing" (open-edn-from-string exml/ex_orders)) (open-edn-from-string exml/ex_orders))))
-  (println (search/path-to-str (search/get-path (search/start-search "orders/addresses[%95819]/name" (open-edn-from-string exml/ex_orders)) (open-edn-from-string exml/ex_orders))))
-  (println (search/path-to-str (search/get-path (search/start-search "orders[0]/addresses[1]/name" (open-edn-from-string exml/ex_orders)) (open-edn-from-string exml/ex_orders))))
-  (pprint/pprint (modify/add-field "/orders[1]/nothing/" (open-edn-from-string exml/ex_orders) "heh"))
-  (pprint/pprint (modify/add-field "/orders[0]/nothing/" (open-edn-from-string exml/ex_orders) "heh"))
-  (pprint/pprint (modify/add-field "/orders[0]/items[0]/nothing/" (open-edn-from-string exml/ex_orders) "heh"))
-  (pprint/pprint (modify/remove-field "/orders[0]/date/" (open-edn-from-string exml/ex_orders)))
-  (pprint/pprint (modify/modify-field "/orders[0]/date/" (open-edn-from-string exml/ex_orders) "heh")))
+  )
