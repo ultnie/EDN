@@ -11,13 +11,15 @@
 ## Contents
 
 - [Object structure](#structure)
-- [X-path like language to query elemets](#search)
-- [Transform object into html](#transform)
-- [Schema validation](#schema)
+- [Query language and search](#query-language-and-search)
+- [Modification](#modification)
+- [Schema validation](#validation)
 
 ## Structure
 
 We used regular Clojure edn data format, which is essentially a nested map with vectors
+
+## Query language and search
 
 Examples of the syntax of the query language can are below:
 ```
@@ -31,8 +33,6 @@ catalog[2] - return the third object on catalog
 orders/*/name[%"Ellen Adams"] - return everything in "orders" that has a field name
 ~name или ~/name - relative search
 ```
-
-## Search
 
 **start-search** function takes a query and data where the search will be conducted, as well as remembers the query in case next search will be relative
 **get-path** function takes a value, path to which you want to find in your data, and data where search will be conducted, returns them as a list of keys and indexes
