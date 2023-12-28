@@ -1,6 +1,5 @@
 (ns sexpr-project.search
   (:require [clojure.string :as str])
-  (:require [clojure.pprint :as pprint])
   (:require [sexpr-project.parser_1 :as parser]))
 
 (def ^:dynamic *prev_query* "") ; переменная, где хранится предыдущий запрос

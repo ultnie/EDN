@@ -216,9 +216,9 @@
     (is (thrown-with-msg? Exception #"Can't modify, field doesn't exist" (modify/modify-field "/orders[0]/nothing/" (open-edn-from-string exml/ex_orders) "heh"))))
 
   (testing "Validation"
-    (is (validator/validate-schema schema (open-edn-from-string exml/ex_orders)))
-    (is (not (validator/validate-schema schema (modify/add-field "/orders[0]/items[0]/nothing/" (open-edn-from-string exml/ex_orders) "heh"))))
-    (is (validator/validate-schema schema (modify/remove-field "/orders[0]/date/" (open-edn-from-string exml/ex_orders))))
-    (is (validator/validate-schema schema (modify/modify-field "/orders[0]/date/" (open-edn-from-string exml/ex_orders) "heh")))
-    (is (validator/validate-schema schema (edn/read-string "{:orders []}")))
-    (is (not (validator/validate-schema schema (open-edn-from-string exml/ex_catalog))))))
+    (is (validator/validate-by-schema schema (open-edn-from-string exml/ex_orders)))
+    (is (not (validator/validate-by-schema schema (modify/add-field "/orders[0]/items[0]/nothing/" (open-edn-from-string exml/ex_orders) "heh"))))
+    (is (validator/validate-by-schema schema (modify/remove-field "/orders[0]/date/" (open-edn-from-string exml/ex_orders))))
+    (is (validator/validate-by-schema schema (modify/modify-field "/orders[0]/date/" (open-edn-from-string exml/ex_orders) "heh")))
+    (is (validator/validate-by-schema schema (edn/read-string "{:orders []}")))
+    (is (not (validator/validate-by-schema schema (open-edn-from-string exml/ex_catalog))))))

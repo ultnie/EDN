@@ -7,12 +7,12 @@
 ;;(defn open-edn-from-string [x]
 ;;  (edn/read-string (pr-str x)))
 
-(defn compare-keys
+(defn- compare-keys
   "Takes two lists of paths in schema and map, makes them into sets and looks for differences"
   [schema-keys data-keys]
   (set/difference (set data-keys) (set schema-keys)))
 
-(defn kvpaths-all
+(defn- kvpaths-all
   "[m]: Find all paths in given map
    [prev m result]: prev - previous path, m - map where to look next, result - container to write results in"
   ([m] (kvpaths-all [] m ()))
@@ -24,7 +24,7 @@
               result
               m)))
 
-(defn validate-schema 
+(defn validate-by-schema 
   "Takes schema in string form [schema-string] and validates that [data] corresponds to that schema"
   [schema-string data]
   (let [schema (read-string schema-string)
