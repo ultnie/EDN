@@ -47,7 +47,7 @@
     (println html-content)
     (println " ")))
 
-(defn -main []
+(defn example []
   ;; Генерация и вывод HTML для ex_orders
   (generate-and-print-html examples/ex_orders "ex_orders")
 

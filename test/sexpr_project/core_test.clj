@@ -4,7 +4,7 @@
   (:require [sexpr-project.examples :as exml])
   (:require [clojure.edn :as edn])
   (:require [sexpr-project.search :as search])
-  (:require [sexpr_project.modify :as modify])
+  (:require [sexpr-project.modify :as modify])
   (:require [sexpr-project.validator :as validator]))
 
 (defn open-edn-from-string [x]
@@ -57,13 +57,13 @@
     (is (= (search/start-search "/sssss/" (open-edn-from-string exml/ex_orders)) (list))))
 
   (testing "Path"
-    (is (= (search/get-path 99503 (open-edn-from-string exml/ex_orders)) (list :orders 0 :number)))
-    (is (= (search/get-path (search/start-search "orders/nothing" (open-edn-from-string exml/ex_orders)) (open-edn-from-string exml/ex_orders)) (list)))
-    (is (= (search/get-path (search/start-search "orders[0]/addresses[1]/name" (open-edn-from-string exml/ex_orders)) (open-edn-from-string exml/ex_orders)) (list :orders 0 :addresses 1 :name)))
-    (is (= (search/get-path (search/start-search "orders[0]/addresses[1]/name" (open-edn-from-string exml/ex_orders)) (open-edn-from-string exml/ex_orders)) (list :orders 0 :addresses 1 :name)))
-    (is (= (search/path-to-str (search/get-path (search/start-search "orders/nothing" (open-edn-from-string exml/ex_orders)) (open-edn-from-string exml/ex_orders))) ""))
-    (is (= (search/path-to-str (search/get-path (search/start-search "orders/addresses[%95819]/name" (open-edn-from-string exml/ex_orders)) (open-edn-from-string exml/ex_orders))) "/orders[0]/addresses[1]/name"))
-    (is (= (search/path-to-str (search/get-path (search/start-search "orders[0]/addresses[1]/name" (open-edn-from-string exml/ex_orders)) (open-edn-from-string exml/ex_orders))) "/orders[0]/addresses[1]/name")))
+    (is (= (search/get-path 99503 (open-edn-from-string exml/ex_orders)) [:orders 0 :number]))
+    (is (= (search/get-path (first (search/start-search "orders/nothing" (open-edn-from-string exml/ex_orders))) (open-edn-from-string exml/ex_orders)) nil))
+    (is (= (search/get-path (first (search/start-search "orders[0]/addresses[1]/name" (open-edn-from-string exml/ex_orders))) (open-edn-from-string exml/ex_orders)) [:orders 0 :addresses 1 :name]))
+    (is (= (search/get-path (first (search/start-search "orders[0]/addresses[1]/name" (open-edn-from-string exml/ex_orders))) (open-edn-from-string exml/ex_orders)) [:orders 0 :addresses 1 :name]))
+    (is (= (search/path-to-str (search/get-path (first (search/start-search "orders/nothing" (open-edn-from-string exml/ex_orders))) (open-edn-from-string exml/ex_orders))) ""))
+    (is (= (search/path-to-str (search/get-path (first (search/start-search "orders/addresses[%95819]/name" (open-edn-from-string exml/ex_orders))) (open-edn-from-string exml/ex_orders))) "/orders[0]/addresses[1]/name"))
+    (is (= (search/path-to-str (search/get-path (first (search/start-search "orders[0]/addresses[1]/name" (open-edn-from-string exml/ex_orders))) (open-edn-from-string exml/ex_orders))) "/orders[0]/addresses[1]/name")))
 
   (testing "Modification"
     (is (= (list (modify/add-field "/orders[1]/nothing/" (open-edn-from-string exml/ex_orders) "heh")) (list {:orders [{:number 99503,
@@ -221,4 +221,8 @@
     (is (validator/validate-by-schema schema (modify/remove-field "/orders[0]/date/" (open-edn-from-string exml/ex_orders))))
     (is (validator/validate-by-schema schema (modify/modify-field "/orders[0]/date/" (open-edn-from-string exml/ex_orders) "heh")))
     (is (validator/validate-by-schema schema (edn/read-string "{:orders []}")))
-    (is (not (validator/validate-by-schema schema (open-edn-from-string exml/ex_catalog))))))
+    (is (not (validator/validate-by-schema schema (open-edn-from-string exml/ex_catalog))))
+    (is (validator/validate-part schema (search/get-path 99503 (open-edn-from-string exml/ex_orders))))
+    (is (not (validator/validate-part schema '(:orders 0 :addresses 1 :name :nothing))))
+    )
+  )

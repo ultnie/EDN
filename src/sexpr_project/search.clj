@@ -1,19 +1,12 @@
 (ns sexpr-project.search
-  (:require [clojure.string :as str])
-  (:require [sexpr-project.parser_1 :as parser]))
+  (:require [clojure.string :as str]
+            [sexpr-project.validator :as validator])
+  (:require [sexpr-project.parser_1 :as parser])
+  )
 
 (def ^:dynamic *prev_query* "") ; переменная, где хранится предыдущий запрос
 
 ; в конце каждой ветви вызывается (search ((rest query) new_data)), где new_data - суженная область поиска данных в зависимости от прошлого результата
-
-(defn- index-of-coll
-  "Used to find an index of [item] in [coll]. Used by get-path function"
-  [item coll]
-  (let [v (if
-           (or (vector? coll) (string? coll))
-            coll
-            (apply vector coll))]
-    (.indexOf coll item)))
 
 (defn path-to-str
   "Transforms list [path] to string according to the query language. Resulting string can be used by functions in sexpr_project.modify file"
@@ -23,22 +16,18 @@
                                       (str res "[" i "]")
                                       (str res "/" (name i))))))))
 
-(defn get-path
-  "Finds path to [endpoint] value in nested [data] map. Returns list with all the keys and indexes on that path. Returns empty list if there's no [endpoint] in [data]"
+(defn get-paths
+  "Finds paths to [endpoint] values in nested [data] map. Returns list of vectors with all the keys and indexes on those paths. Returns empty list if there's no [endpoint] in [data]"
   [endpoint data]
-  (let [search-path (fn [endpoint data] (cond (= endpoint data) []
-                                              (map? data) (some (fn [[k v]]
-                                                                  (when-let [p (get-path endpoint v)]
-                                                                    (flatten (cons k p))))
-                                                                data)
-                                              (vector? data) (for [j data] (if (nil? (last (get-path endpoint j)))
-                                                                             ()
-                                                                             (flatten (list (index-of-coll j data) (get-path endpoint j)))))
-                                              :else nil))]
-  ;(println endpoint)
-  ;(println data)
-  ;(println (type data))
-    (if (seq? endpoint) (flatten (for [i endpoint] (search-path i data))) (search-path endpoint data))))
+  (let [paths (validator/kvpaths-all data)]
+    (remove nil? (doall (for [i paths] (if (= endpoint (get-in data i)) i))))))
+
+(defn get-path
+  "Finds first path to [endpoint] value in nested [data] map"
+  [endpoint data]
+    (let [paths (validator/kvpaths-all data)]
+      (first (get-paths endpoint data))
+  ))
 
 (defn- search
   "Searches data specified by [query] in [data]. Returns a list of all data that corresponds to the [query]"
@@ -53,7 +42,7 @@
                                                                           ;(println (str/replace (subs condition 1) #"\"" ""))
                                                                           ;(println (get-in i [(keyword tag)]))
                                                           (cond
-                                                            (= (str tag) "*") (get-in data (butlast (get-path (list (str/replace (apply str (rest condition)) #"\"" "")) data)))
+                                                            (= (str tag) "*") (get-in data (butlast (get-path (str/replace (apply str (rest condition)) #"\"" "") data)))
                                                             (= (str (get condition 0)) "=") (if (= (str (get-in data [(keyword tag)])) (str/replace (subs condition 1) #"\"" "")) ; если требуется равентсво данных в определённом поле
                                                                                               (search (rest query) data)
                                                                                               nil)
@@ -80,3 +69,12 @@
     (alter-var-root #'*prev_query* (constantly (str *prev_query* (subs query 1))))) ;прикрепляем к прошлому поиску новую часть запроса
   ;(println *prev_query*)
   (remove nil? (flatten (search (parser/prepare-for-search *prev_query*) data))))
+
+(defn start-search-with-validation
+  "start-search that validates found result to check if it should be in the document according to the schema"
+  [query data schema]
+  (let [result (start-search query data)
+        valid-res (doall (for [i result] (validator/validate-part schema (get-path i data))))]
+    (doall (for [i (range (count valid-res))] (if (false? (nth valid-res i)) (println (str "WARNING! Path " (get-path (nth result i) data) " is not in the schema")) ())))
+    result)
+  )
