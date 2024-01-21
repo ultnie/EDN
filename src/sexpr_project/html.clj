@@ -5,13 +5,17 @@
 ;; Объявляем функции заранее
 (declare process-generic process-map process-vector process-scalar)
 
-(defn- get-keys [data]
+(defn- get-keys 
+  "Get keys from map or range of length of vector"
+  [data]
   (cond
     (map? data) (keys data)
     (vector? data) (range (count data))
     :else []))
 
-(defn- process-map [data]
+(defn- process-map 
+  "Makes a table out of map"
+  [data]
   (let [keys (get-keys data)]
     [:div
      ;;[:strong "Map:"]
@@ -24,25 +28,33 @@
        [:tr (for [key keys]
               [:td (process-generic (get data key))])]]]]))
 
-(defn- process-vector [data]
+(defn- process-vector 
+  "Makes a table out of vector"
+  [data]
   [:div
    ;;[:strong "Vector:"]
    [:ul (for [item data]
           [:li (process-generic item)])]])
 
-(defn- process-scalar [data]
+(defn- process-scalar 
+  "Makes a table out of rest datatypes that are not map or vector"
+  [data]
   [:div
    ;;[:strong "Scalar:"]
    [:p (str data)]])
 
-(defn- process-generic [data]
+(defn- process-generic 
+  "Checks [data] type and calls a function that creates a table from that type"
+  [data]
   (cond
     (map? data) (process-map data)
     (vector? data) (process-vector data)
     :else (process-scalar data)))
 
-(defn- generate-and-print-html [example name]
-  (let [html-content (hiccup/html (process-generic example))]
+(defn generate-and-print-html 
+  "Generates and prints html table for given EDN"
+  [data name]
+  (let [html-content (hiccup/html (process-generic data))]
     (println (str "Generated HTML content for " name ":"))
     (println html-content)
     (println " ")))
