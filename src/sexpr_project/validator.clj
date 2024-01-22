@@ -1,7 +1,6 @@
 (ns sexpr-project.validator
   (:require [clojure.set :as set])
   (:require [clojure.string])
-  (:require [clojure.walk :as walk])
   )
 
 ;;(defn open-edn-from-string [x]
@@ -12,7 +11,7 @@
   [schema-keys data-keys]
   (set/difference (set data-keys) (set schema-keys)))
 
-(defn- kvpaths-all
+(defn kvpaths-all
   "[m]: Find all paths in given map
    [prev m result]: prev - previous path, m - map where to look next, result - container to write results in"
   ([m] (kvpaths-all [] m ()))
@@ -24,15 +23,25 @@
               result
               m)))
 
-(defn validate-by-schema 
+(defn validate-by-schema
   "Takes schema in string form [schema-string] and validates that [data] corresponds to that schema"
   [schema-string data]
   (let [schema (read-string schema-string)
         schema-keys (map #(filter keyword? %) (kvpaths-all schema))
         data-keys (map #(filter keyword? %) (kvpaths-all data))
-        extra-keys (compare-keys schema-keys data-keys)
-        ]
+        extra-keys (compare-keys schema-keys data-keys)]
     ;(println "Schema keys:" (kvpaths-all schema))
     ;(println "Data keys:" (kvpaths-all data))
-    (empty? extra-keys)
-    )) ; Возвращаем true, если отсутствуют лишние ключи
+    (empty? extra-keys))) ; Возвращаем true, если отсутствуют лишние ключи
+
+(defn validate-part
+  "Takes [path] and looks for the same path in [schema]. true if found, false otherwise"
+  [schema-string path]
+  (let [schema (read-string schema-string)
+        schema-keys (map #(filter keyword? %) (kvpaths-all schema))
+        fil-path (filter keyword? path)]
+    ;(println fil-path)
+    ;(println schema-keys)
+    (if (nil? (some #{fil-path} schema-keys))
+      false
+      true)))
