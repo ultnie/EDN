@@ -51,20 +51,25 @@
     (vector? data) (process-vector data)
     :else (process-scalar data)))
 
-(defn generate-and-print-html 
-  "Generates and prints html table for given EDN"
-  [data name]
-  (let [html-content (hiccup/html (process-generic data))]
+(defn generate-html 
+  "Generates html table for given EDN"
+  [data]
+  (hiccup/html (process-generic data))
+  )
+
+(defn print-html 
+  "Prints html table"
+  [html-str name]
     (println (str "Generated HTML content for " name ":"))
-    (println html-content)
-    (println " ")))
+    (println html-str)
+    (println " "))
 
 (defn example []
   ;; Генерация и вывод HTML для ex_orders
-  (generate-and-print-html examples/ex_orders "ex_orders")
+  (print-html (generate-html examples/ex_orders) "ex_orders")
 
   ;; Генерация и вывод HTML для ex_vehicles
-  (generate-and-print-html examples/ex_vehicles "ex_vehicles")
+  (print-html (generate-html examples/ex_vehicles) "ex_vehicles")
 
   ;; Генерация и вывод HTML для ex_catalog
-  (generate-and-print-html examples/ex_catalog "ex_catalog"))
+  (print-html (generate-html examples/ex_catalog) "ex_catalog"))
