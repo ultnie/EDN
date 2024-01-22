@@ -59,6 +59,7 @@ Exceptions:
 
 ``` clojure
 (modify/add-field "/orders[0]/nothing/" (open-edn-from-string exml/ex_orders) "heh")
+(modify/add-field-with-validation "/orders[0]/items[0]/nothing/" (open-edn-from-string exml/ex_orders) "heh" schema)
 (modify/remove-field "/orders[0]/date/" (open-edn-from-string exml/ex_orders))
 (modify/modify-field "/orders[0]/date/" (open-edn-from-string exml/ex_orders) "heh")
 ```
