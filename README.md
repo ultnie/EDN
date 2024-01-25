@@ -1,12 +1,12 @@
 <div align="center">
   <h1 align="center">
-  Clojure S expressions
+  Clojure EDN
   </h1>
 </div>
 
 ## About The Project
 
-"S expressions" project as a part of NSU Modern Programming Methods course
+Project as a part of NSU Modern Programming Methods course
 
 ## Contents
 
